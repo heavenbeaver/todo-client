@@ -11,11 +11,10 @@ const Modal = forwardRef(({ closeModal }, ref) => {
     const [title, setTitle] = useState('');
     const [desc, setDesc] = useState('');
     const [expireDate, setExpireDate] = useState('');
-    // const [createDate, setCreateDate] = useState('');
-    // const [updateDate, setUpdateDate] = useState('');
     const [priority, setPriority] = useState('Высокий');
     const [responsible, setResponsible] = useState('');
     const [status, setStatus] = useState('');
+    const [deleting, setDeleting] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -65,7 +64,7 @@ const Modal = forwardRef(({ closeModal }, ref) => {
 
     const handleDeleteTodo = async (e) => {
         e.preventDefault();
-        setLoading(true);
+        setDeleting(true);
         try {
             const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/todos/${selectedTodoId}`, {
                 method: 'DELETE',
@@ -75,15 +74,15 @@ const Modal = forwardRef(({ closeModal }, ref) => {
             });
 
             if (!res.ok) {
-                setLoading(false)
+                setDeleting(false)
                 console.error('Ошибка при удалении задачи');
                 return;
             }
 
-            setLoading(false);
+            setDeleting(false);
             closeModal();
         } catch (err) {
-            setLoading(false)
+            setDeleting(false)
             console.error(err)
         }
     }
@@ -252,7 +251,7 @@ const Modal = forwardRef(({ closeModal }, ref) => {
                         <option value='Отменена'>Отменена</option>
                     </select>
                     <button className="btn btn-primary" disabled={loading}>{loading ? 'Отправка...' : 'Сохранить'}</button>
-                    { canEdit && <button className="btn btn-delete" disabled={loading} onClick={handleDeleteTodo}>{loading ? 'Удаление' : 'Удалить'}</button>}
+                    { canEdit && <button className="btn btn-delete" disabled={deleting} onClick={handleDeleteTodo}>{deleting ? 'Удаление' : 'Удалить'}</button>}
                 </form>
             }
             <button className="btn-close" onClick={closeModal}><CrossIcon /></button>

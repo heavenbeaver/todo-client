@@ -113,23 +113,30 @@ const TodoList = ({ openModal }) => {
             ) : Object.keys(grouped).length === 0 ? (
                 <p className="empty-message">Список задач пуст</p>
             ) : (
-                Object.entries(grouped).map(([groupName, groupItems]) => (
-                    <div key={groupName} className="todo-group">
-                        <h3>{groupName}</h3>
-                        <ul className="todo-list">
-                            {groupItems
-                                .filter(todo => todo.creator === user.id || todo.responsible === user.id)
-                                .map(todo => (
+                Object.entries(grouped).map(([groupName, groupItems]) => {
+                    // Фильтруем задачи для текущего пользователя
+                    const filteredItems = groupItems.filter(todo =>
+                        todo.creator === user.id || todo.responsible === user.id
+                    );
+
+                    // Не рендерим группу, если после фильтрации нет задач
+                    if (filteredItems.length === 0) return null;
+
+                    return (
+                        <div key={groupName} className="todo-group">
+                            <h3>{groupName}</h3>
+                            <ul className="todo-list">
+                                {filteredItems.map(todo => (
                                     <TodoCard
                                         key={todo.id}
                                         todo={todo}
                                         openModal={openModal}
                                     />
-                                ))
-                            }
-                        </ul>
-                    </div>
-                ))
+                                ))}
+                            </ul>
+                        </div>
+                    );
+                })
             )}
         </div>
     );
