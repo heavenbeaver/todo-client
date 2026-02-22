@@ -56,7 +56,7 @@ const TodoList = ({ openModal }) => {
             }
             const expireDay = new Date(expire.getFullYear(), expire.getMonth(), expire.getDate());
 
-            if (expireDay.getTime() === today.getTime()) {
+            if (expireDay.getTime() === today.getTime() || expireDay.getTime() < today.getTime()) {
                 groups['На сегодня'].push(todo);
             } else if (expireDay > today && expireDay <= weekEnd) {
                 groups['На неделю'].push(todo);
