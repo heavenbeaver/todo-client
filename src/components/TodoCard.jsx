@@ -8,10 +8,19 @@ const TodoCard = ({ cardKey, todo, openModal }) => {
     const { getUserFullName, setSelectedTodoId } = useContext(AppContext);
     const currentDate = new Date().toLocaleDateString('ru-RU');
 
+    function parseDate(dateStr) {
+        const [day, month, year] = dateStr.split('.');
+        return new Date(year, month - 1, day); // month - 1 так как месяцы с 0
+    }
+
+    // Сравнение
+    const expireDateObj = parseDate(expireDate);
+    const currentDateObj = parseDate(currentDate);
+
     return (
         <li className="todo-card" key={cardKey} onClick={() => {openModal('edit'); setSelectedTodoId(todo.id)}}>
             <div className="todo-card-header">
-                <h3 className={`todo-title ${status == 'Выполнена' && 'title-green'} ${expireDate < currentDate && status !== 'Выполнена' && 'title-red'}`}>{title}</h3>
+                <h3 className={`todo-title ${status == 'Выполнена' && 'title-green'} ${expireDateObj < currentDateObj && status !== 'Выполнена' && 'title-red'}`}>{title}</h3>
                 <div className="todo-badges">
                     <span className="badge priority-high">{priority}</span>
                     <span className="badge status-new">{status}</span>
