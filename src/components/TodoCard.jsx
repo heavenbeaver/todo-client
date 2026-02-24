@@ -10,7 +10,7 @@ const TodoCard = ({ cardKey, todo, openModal }) => {
 
     function parseDate(dateStr) {
         const [day, month, year] = dateStr.split('.');
-        return new Date(year, month - 1, day); // month - 1 так как месяцы с 0
+        return new Date(year, month - 1, day);
     }
 
     // Сравнение
