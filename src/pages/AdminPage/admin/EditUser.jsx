@@ -15,13 +15,20 @@ const defaultFormData = {
 
 const EditUser = () => {
     const { id } = useParams();
-    const navigate = useNavigate();
     const [formData, setFormData] = useState(defaultFormData);
     const { user, users, getUserFullName, setRefetch } = useContext(AppContext);
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isSaving, setSaving] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+
+    const [passwordError, setPasswordError] = useState('');
+    const [passwordData, setPasswordData] = useState({
+        currentPassword: '',
+        newPassword: ''
+    })
+
+    const navigate = useNavigate();
 
     const fetchUserData = async () => {
         if (!id) return;
@@ -63,6 +70,64 @@ const EditUser = () => {
         })
     }
 
+    const handleChangePass = (e) => {
+        const { name, value } = e.target;
+        setPasswordData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+        // Очищаем ошибку при изменении
+        setPasswordError('');
+    }
+
+    const handlePasswordChange = async() => {
+        // Валидация
+        if (!passwordData.currentPassword) {
+            setPasswordError('Введите текущий пароль');
+            return false;
+        }
+
+        if (!passwordData.newPassword) {
+            setPasswordError('Введите новый пароль');
+            return false;
+        }
+
+        // if (passwordData.newPassword.length < 6) {
+        //     setPasswordError('Новый пароль должен содержать минимум 6 символов');
+        //     return false;
+        // }
+
+        try {
+            const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/users/${id}/change-password`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    currentPassword: passwordData.currentPassword,
+                    newPassword: passwordData.newPassword
+                })
+            });
+
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.message || 'Неверный текущий пароль');
+            }
+
+            // Очищаем поля пароля после успешной смены
+            setPasswordData({
+                currentPassword: '',
+                newPassword: ''
+            });
+
+            return true;
+        } catch (error) {
+            setPasswordError(error.message);
+            return false;
+        }
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setSaving(true);
@@ -79,6 +144,17 @@ const EditUser = () => {
                     head: formData.head === '' ? null : formData.head
                 })
             });
+
+            // Если заполнены поля пароля - меняем пароль
+            if (passwordData.currentPassword || passwordData.newPassword) {
+                const passwordSuccess = await handlePasswordChange();
+                if (!passwordSuccess) {
+                    // Если ошибка смены пароля, но данные обновлены
+                    setError('Данные обновлены, но не удалось сменить пароль');
+                    setSaving(prev => !prev);
+                    return;
+                }
+            }
 
             if (res.ok) {
                 setRefetch(prev => !prev);
@@ -157,6 +233,13 @@ const EditUser = () => {
                                 <span className="slider round"></span>
                             </label>
                         </div>
+                    )}
+
+                    <label htmlFor="current-password">Сменить пароль</label>
+                    <input type="password" name="currentPassword" id="current-password" placeholder="Текущий пароль" value={passwordData.currentPassword} onChange={handleChangePass}/>
+                    <input type="password" name="newPassword" placeholder="Новый пароль" value={passwordData.newPassword} onChange={handleChangePass} />
+                    {passwordError && (
+                        <div className="password-error">{passwordError}</div>
                     )}
 
                     <div className="action-btns">

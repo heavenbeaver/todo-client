@@ -85,9 +85,9 @@ const LoginPage = () => {
                     </div>
                     <div className="hero-text">
                         <div className="hero-eyebrow">Система управления тикетами</div>
-                        <div className="hero-title">Каждая задача<br /><span>под контролем.</span></div>
+                        <div className="hero-title">Каждая задача<br /><span>под контролем</span></div>
                         <div className="hero-desc">
-                            Отслеживайте, приоритизируйте и решайте задачи команды — всё в одном месте. Сигнал всегда чистый.
+                            Отслеживайте, приоритизируйте и решайте задачи команды — всё в одном месте
                         </div>
                     </div>
                     <div className="waveform">
@@ -141,7 +141,7 @@ const LoginPage = () => {
                                 value={login}
                                 onChange={(e) => setLogin(e.target.value)}
                                 placeholder="user@company.ru"
-                                autoComplete="on"
+                                autoComplete="username"
                                 required />
 
                             <label htmlFor="password">Пароль</label>
@@ -153,7 +153,7 @@ const LoginPage = () => {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="••••••••••"
-                                    autoComplete="password"
+                                    autoComplete="current-password"
                                     required />
                                 <div className="show-pass-btn" onClick={changePassVisibility}>
                                     <img width={24} src={isHidePass ? 'show.png' : 'hide.png'} alt="Иконка показать/скрыть пароль" title={isHidePass ? 'Показать пароль' : 'Скрыть пароль'} />
